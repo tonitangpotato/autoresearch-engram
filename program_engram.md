@@ -28,13 +28,13 @@ Before deciding what to try, query Engram for relevant memories:
 
 ```bash
 # What worked before?
-neuromem recall "successful experiments that improved val_bpb" --top 5
+python engram_wrapper.py recall "successful experiments that improved val_bpb" --top 5
 
 # What failed?
-neuromem recall "failed experiments crashes OOM" --top 5
+python engram_wrapper.py recall "failed experiments crashes OOM" --top 5
 
 # What patterns exist?
-neuromem recall "patterns in hyperparameter changes" --top 3
+python engram_wrapper.py recall "patterns in hyperparameter changes" --top 3
 ```
 
 Use these memories to **inform your next experiment choice**. Don't repeat what failed. Build on what worked. Look for unexplored combinations of successful changes.
@@ -62,16 +62,16 @@ After every experiment (success, failure, or crash), store the result:
 
 ```bash
 # For successful experiments (val_bpb improved)
-neuromem add "KEEP: [description]. val_bpb went from [old] to [new] (improvement: [delta]). Key change: [what was modified]. Hypothesis: [why it worked]." --type episodic --importance 0.8
+python engram_wrapper.py store "KEEP: [description]. val_bpb went from [old] to [new] (improvement: [delta]). Key change: [what was modified]. Hypothesis: [why it worked]." --type episodic --importance 0.8
 
 # For failed experiments (val_bpb worse or equal)
-neuromem add "DISCARD: [description]. val_bpb went from [old] to [new] (regression: [delta]). Key change: [what was modified]. Hypothesis: [why it failed]." --type episodic --importance 0.4
+python engram_wrapper.py store "DISCARD: [description]. val_bpb went from [old] to [new] (regression: [delta]). Key change: [what was modified]. Hypothesis: [why it failed]." --type episodic --importance 0.4
 
 # For crashes
-neuromem add "CRASH: [description]. Error: [error type]. Key change: [what was modified]. Lesson: [what to avoid]." --type episodic --importance 0.6
+python engram_wrapper.py store "CRASH: [description]. Error: [error type]. Key change: [what was modified]. Lesson: [what to avoid]." --type episodic --importance 0.6
 
 # For emerging patterns (every 10 experiments)
-neuromem add "PATTERN: After [N] experiments, observed that [pattern]. Confidence: [high/medium/low]." --type semantic --importance 0.9
+python engram_wrapper.py store "PATTERN: After [N] experiments, observed that [pattern]. Confidence: [high/medium/low]." --type semantic --importance 0.9
 ```
 
 ### 7. DECIDE — Keep or discard
@@ -84,10 +84,10 @@ Every 10 experiments, do a reflection step:
 
 ```bash
 # Recall all experiments
-neuromem recall "experiment results" --top 20
+python engram_wrapper.py recall "experiment results" --top 20
 
 # Store a meta-pattern
-neuromem add "REFLECTION after [N] experiments: Best val_bpb so far: [X]. Most effective category of changes: [Y]. Least effective: [Z]. Unexplored directions: [W]." --type semantic --importance 0.95
+python engram_wrapper.py store "REFLECTION after [N] experiments: Best val_bpb so far: [X]. Most effective category of changes: [Y]. Least effective: [Z]. Unexplored directions: [W]." --type semantic --importance 0.95
 ```
 
 Then continue the loop.

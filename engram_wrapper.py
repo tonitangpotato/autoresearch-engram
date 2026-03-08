@@ -26,7 +26,7 @@ from pathlib import Path
 
 # Try to import Engram
 try:
-    from engramai import EngramMemory
+    from engram import Memory
     HAS_ENGRAM = True
 except ImportError:
     HAS_ENGRAM = False
@@ -42,7 +42,7 @@ def get_memory():
         print("⚠️  Engram not installed. Install with: pip install engramai")
         print("   Falling back to results.tsv only.")
         return None
-    return EngramMemory(db_path=DB_PATH)
+    return Memory(DB_PATH)
 
 
 def parse_results_tsv():
@@ -99,31 +99,31 @@ def cmd_recall(args):
         print()
     
     # Query Engram for deeper patterns
-    if mem:
+    if mem is not None:
         print("🔍 Querying Engram for patterns...\n")
         
         # Successful patterns
-        successes = mem.recall("successful experiments that improved val_bpb", top_k=5)
+        successes = mem.recall("successful experiments that improved val_bpb", limit=5)
         if successes:
             print("   💡 What worked:")
             for s in successes:
-                print(f"      • {s.content[:120]}")
+                print(f"      • {s['content'][:120]}")
             print()
         
         # Failed patterns  
-        failures = mem.recall("failed experiments that made val_bpb worse", top_k=3)
+        failures = mem.recall("failed experiments that made val_bpb worse", limit=3)
         if failures:
             print("   ⚠️  What didn't work:")
             for f in failures:
-                print(f"      • {f.content[:120]}")
+                print(f"      • {f['content'][:120]}")
             print()
         
         # Meta-patterns
-        patterns = mem.recall("patterns and reflections about research direction", top_k=3)
+        patterns = mem.recall("patterns and reflections about research direction", limit=3)
         if patterns:
             print("   🧬 Emerging patterns:")
             for p in patterns:
-                print(f"      • {p.content[:120]}")
+                print(f"      • {p['content'][:120]}")
             print()
     
     # Suggest what NOT to try
@@ -142,7 +142,7 @@ def cmd_recall(args):
 def cmd_store(args):
     """Store an experiment result in Engram memory."""
     mem = get_memory()
-    if not mem:
+    if mem is None:
         print("Engram not available. Result recorded in results.tsv only.")
         return
     
@@ -174,7 +174,7 @@ def cmd_store(args):
         memory_text = f"DISCARD: {description}. val_bpb: {val_bpb:.6f}{delta_str}."
         memory_type = "episodic"
     
-    mem.add(memory_text, memory_type=memory_type, importance=importance)
+    mem.add(memory_text, type=memory_type, importance=importance)
     print(f"🧠 Stored in Engram: {memory_text[:80]}...")
 
 
@@ -230,7 +230,7 @@ def cmd_reflect(args):
         print(f"      {cat}: {success}/{total} succeeded ({100*success/total:.0f}%)")
     
     # Store reflection in Engram
-    if mem:
+    if mem is not None:
         reflection = (
             f"REFLECTION after {n} experiments: "
             f"Best val_bpb: {best['val_bpb']:.6f} ({best['description']}). "
@@ -238,7 +238,7 @@ def cmd_reflect(args):
             f"Most effective category: {max(categories.items(), key=lambda x: x[1].get('keep', 0))[0]}. "
             f"Least effective: {min(categories.items(), key=lambda x: x[1].get('keep', 0))[0]}."
         )
-        mem.add(reflection, memory_type="semantic", importance=0.95)
+        mem.add(reflection, type="semantic", importance=0.95)
         print(f"\n   🧠 Reflection stored in Engram")
 
 
@@ -283,10 +283,10 @@ def cmd_suggest(args):
         suggestions.append("High failure rate. Consider smaller, more conservative changes.")
     
     # Query Engram for additional context
-    if mem:
-        patterns = mem.recall("most effective experiment changes", top_k=3)
+    if mem is not None:
+        patterns = mem.recall("most effective experiment changes", limit=3)
         if patterns:
-            suggestions.append(f"Engram pattern: {patterns[0].content[:100]}")
+            suggestions.append(f"Engram pattern: {patterns[0]['content'][:100]}")
     
     for i, s in enumerate(suggestions, 1):
         print(f"   {i}. {s}")
