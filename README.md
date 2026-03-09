@@ -1,3 +1,13 @@
+# autoresearch + Engram 🧠
+
+> **Fork of [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) with cognitive memory.**
+>
+> The original agent records results in a TSV file but forgets *why* experiments worked or failed. This fork adds [Engram](https://github.com/tonitangpotato/engram-ai) — neuroscience-grounded memory (ACT-R activation + Hebbian learning + Ebbinghaus forgetting) so the agent builds real intuition across experiments and sessions.
+>
+> **📖 [Full Engram integration docs →](README_ENGRAM.md)**
+
+---
+
 # autoresearch
 
 ![teaser](progress.png)
