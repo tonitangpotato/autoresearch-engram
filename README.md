@@ -1,14 +1,94 @@
 # autoresearch + Engram 🧠
 
-> **Fork of [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) with cognitive memory.**
->
-> The original agent records results in a TSV file but forgets *why* experiments worked or failed. This fork adds [Engram](https://github.com/tonitangpotato/engram-ai) — neuroscience-grounded memory (ACT-R activation + Hebbian learning + Ebbinghaus forgetting) so the agent builds real intuition across experiments and sessions.
->
-> **📖 [Full Engram integration docs →](README_ENGRAM.md)**
+> **Give your autonomous research agent a brain that remembers.**
+
+Fork of [Karpathy's autoresearch](https://github.com/karpathy/autoresearch) enhanced with [Engram](https://github.com/tonitangpotato/engram-ai) — a neuroscience-grounded memory system.
+
+## The Problem
+
+autoresearch is brilliant — an AI agent runs ML experiments autonomously while you sleep. But it has a fundamental limitation: **no long-term memory**. It records results in a TSV file, but can't:
+
+- Remember *why* an experiment worked or failed
+- Recognize patterns across dozens of experiments
+- Avoid repeating approaches that already crashed
+- Continue intelligently after a session restart
+
+## The Solution
+
+Engram adds **cognitive memory** using real neuroscience models:
+
+| Mechanism | What It Does | Research Basis |
+|-----------|-------------|---------------|
+| **ACT-R Activation** | Successful patterns float to the top naturally | Anderson (1993) |
+| **Hebbian Learning** | Co-occurring successful changes get linked | Hebb (1949) |
+| **Ebbinghaus Forgetting** | Failed experiments fade away over time | Ebbinghaus (1885) |
+| **Memory Consolidation** | Raw results → stable patterns | Born & Diekelmann (2010) |
+
+## What Changes
+
+The experiment loop stays identical. Engram adds two steps:
+
+```diff
+  LOOP FOREVER:
++   1. RECALL — query Engram: what worked? what failed? what patterns?
+    2. Choose an experiment idea (now informed by memory)
+    3. Modify train.py, git commit
+    4. Run: uv run train.py > run.log 2>&1
+    5. Check results
++   6. STORE — save result + context to Engram
+    7. Keep or discard
++   8. REFLECT — every 10 experiments, analyze patterns
+```
+
+## Memory Evolution Example
+
+**After 10 experiments:**
+```
+🧠 What worked: "LR increase to 0.04 improved by 0.004"
+⚠️  What failed: "GeLU activation made things worse"
+🚫 Avoid: activation, gelu, swish
+```
+
+**After 50 experiments:**
+```
+🧬 Pattern: "Architecture changes are 3x more effective than optimizer tweaks"
+🧬 Pattern: "Combining 2 successful changes works, combining 3+ usually crashes"
+💡 Best direction: "Try rotary embeddings — attention hasn't been explored yet"
+```
+
+**After 100 experiments:**
+```
+🧬 Stable: "Optimal model for 5-min budget is ~60M params, 10 layers, width 768"
+🧬 Stable: "Muon consistently beats AdamW by 0.002-0.005 val_bpb"
+💡 Unexplored: "No experiments on data ordering or curriculum learning"
+```
+
+The agent develops **research intuition** — exactly like a human researcher does over months of work.
+
+## Quick Start
+
+```bash
+# Standard autoresearch setup
+uv sync
+uv run prepare.py
+
+# Add Engram
+pip install engramai
+
+# Use the enhanced program — point your AI agent to program_engram.md instead of program.md
+```
+
+## Production Stats (Engram)
+
+Running in production for 30+ days:
+- 3,846 memories stored | 230,103 recalls | 12,510 Hebbian links
+- ~90ms retrieval | 48MB storage | $0 API cost
+
+**📖 [Full Engram integration docs →](README_ENGRAM.md)** · [Engram on GitHub](https://github.com/tonitangpotato/engram-ai) · [PyPI](https://pypi.org/project/engramai/)
 
 ---
 
-# autoresearch
+# autoresearch (Original README)
 
 ![teaser](progress.png)
 
